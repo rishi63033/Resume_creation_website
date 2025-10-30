@@ -1,31 +1,38 @@
-/**
-# 🚀 Resume Builder (MERN Stack)
 
-This is a **full-stack resume builder** application where users can:
-- Create an account (Signup/Login)
-- Choose resume templates
-- Fill in personal, education, and experience details
-- Preview and download resumes as PDFs
+-
+
+##  **Frontend README** → `frontend/README.md`
+```markdown
+#  Frontend - Resume Builder
+
+This is the **React + Vite** frontend for the Resume Builder project.
+
+---
+
+##  Features
+- Beautiful UI built with **Tailwind CSS**
+- Resume creation and live preview
+- PDF download using `html2canvas` and `jsPDF`
+- Communicates with backend via **Axios**
+- Routing with **React Router DOM**
 
 ---
 
 ## 🧩 Tech Stack
-
-### Frontend:
 - React + Vite
 - Tailwind CSS
 - React Router DOM
 - Axios
-- html2canvas & jsPDF (for PDF export)
-
-### Backend:
-- Node.js + Express
-- MongoDB (Mongoose)
-- JWT Authentication
-- bcryptjs (password hashing)
-- dotenv + cors
+- html2canvas & jsPDF
 
 ---
+
+## ⚙️ Setup Instructions
+
+### 1️⃣ Install Dependencies
+```bash
+cd frontend
+npm install
 
 
 

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { templates } from "../components/templates";
 import api from "../api/axios";
 
-// Form components
+// Form components (memoized)
 import PersonalInfoForm from "../components/forms/PersonalInfoForm";
 import EducationForm from "../components/forms/EducationForm";
 import ExperienceForm from "../components/forms/ExperienceForm";
@@ -15,7 +15,6 @@ import CustomSectionForm from "../components/forms/CustomSectionsForm";
 const Editor = () => {
   const { templateId } = useParams();
   const navigate = useNavigate();
-
   const selectedTemplate = templates.find((t) => t.id === templateId);
 
   // ===== State =====
@@ -26,39 +25,39 @@ const Editor = () => {
   const [skills, setSkills] = useState([]);
   const [certifications, setCertifications] = useState([]);
   const [customSections, setCustomSections] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
-  // ===== Fetch existing data =====
+  // ===== Fetch existing data once =====
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
         const res = await api.get("/data/my");
         if (res.data?.data) {
           const d = res.data.data;
           setPersonalInfo(d.personalInfo || {});
-          setEducation(Array.isArray(d.education) ? d.education : []);
-          setExperience(Array.isArray(d.experience) ? d.experience : []);
-          setProjects(Array.isArray(d.projects) ? d.projects : []);
-          setSkills(Array.isArray(d.skills) ? d.skills : []);
-          setCertifications(Array.isArray(d.certifications) ? d.certifications : []);
-          setCustomSections(Array.isArray(d.customSections) ? d.customSections : []);
+          setEducation(d.education || []);
+          setExperience(d.experience || []);
+          setProjects(d.projects || []);
+          setSkills(d.skills || []);
+          setCertifications(d.certifications || []);
+          setCustomSections(d.customSections || []);
         }
-      } catch (err) {
+      } catch {
         console.log("No existing data found");
       } finally {
         setLoading(false);
       }
-    };
-    fetchData();
+    })();
   }, []);
 
-  // ====== Handlers with useCallback (to prevent re-renders) ======
+  // ===== Handlers (memoized with useCallback so they don't trigger re-renders) =====
+  const handleChangePersonal = useCallback((field, value) => {
+    setPersonalInfo((prev) => ({ ...prev, [field]: value }));
+  }, []);
 
-  // Education
   const handleAddEducation = useCallback(() => {
-    setEducation((prev) => [
-      ...prev,
+    setEducation((p) => [
+      ...p,
       {
         level: "",
         institution: "",
@@ -71,49 +70,40 @@ const Editor = () => {
     ]);
   }, []);
 
-  const handleChangeEducation = useCallback((index, field, value) => {
-    setEducation((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+  const handleChangeEducation = useCallback((i, f, v) => {
+    setEducation((p) => {
+      const u = [...p];
+      u[i][f] = v;
+      return u;
     });
   }, []);
 
-  const handleRemoveEducation = useCallback((index) => {
-    setEducation((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveEducation = useCallback((i) => {
+    setEducation((p) => p.filter((_, x) => x !== i));
   }, []);
 
-  // Experience
   const handleAddExperience = useCallback(() => {
-    setExperience((prev) => [
-      ...prev,
-      {
-        title: "",
-        company: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-      },
+    setExperience((p) => [
+      ...p,
+      { title: "", company: "", location: "", startDate: "", endDate: "", description: "" },
     ]);
   }, []);
 
-  const handleChangeExperience = useCallback((index, field, value) => {
-    setExperience((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+  const handleChangeExperience = useCallback((i, f, v) => {
+    setExperience((p) => {
+      const u = [...p];
+      u[i][f] = v;
+      return u;
     });
   }, []);
 
-  const handleRemoveExperience = useCallback((index) => {
-    setExperience((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveExperience = useCallback((i) => {
+    setExperience((p) => p.filter((_, x) => x !== i));
   }, []);
 
-  // Projects
   const handleAddProject = useCallback(() => {
-    setProjects((prev) => [
-      ...prev,
+    setProjects((p) => [
+      ...p,
       {
         title: "",
         timeline: "",
@@ -126,77 +116,82 @@ const Editor = () => {
     ]);
   }, []);
 
-  const handleChangeProject = useCallback((index, field, value) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+  const handleChangeProject = useCallback((i, f, v) => {
+    setProjects((p) => {
+      const u = [...p];
+      u[i][f] = v;
+      return u;
     });
   }, []);
 
-  const handleRemoveProject = useCallback((index) => {
-    setProjects((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveProject = useCallback((i) => {
+    setProjects((p) => p.filter((_, x) => x !== i));
   }, []);
 
-  // Skills
-  const handleAddSkill = useCallback(() => {
-    setSkills((prev) => [...prev, ""]);
-  }, []);
-
-  const handleChangeSkill = useCallback((index, value) => {
-    setSkills((prev) => {
-      const updated = [...prev];
-      updated[index] = value;
-      return updated;
+  const handleAddSkill = useCallback(() => setSkills((p) => [...p, ""]), []);
+  const handleChangeSkill = useCallback((i, v) => {
+    setSkills((p) => {
+      const u = [...p];
+      u[i] = v;
+      return u;
     });
   }, []);
-
-  const handleRemoveSkill = useCallback((index) => {
-    setSkills((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveSkill = useCallback((i) => {
+    setSkills((p) => p.filter((_, x) => x !== i));
   }, []);
 
-  // Certifications
   const handleAddCert = useCallback(() => {
-    setCertifications((prev) => [
-      ...prev,
-      { title: "", organization: "", year: "", description: "" },
-    ]);
+    setCertifications((p) => [...p, { title: "", organization: "", year: "", description: "" }]);
   }, []);
 
-  const handleChangeCert = useCallback((index, field, value) => {
-    setCertifications((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+  const handleChangeCert = useCallback((i, f, v) => {
+    setCertifications((p) => {
+      const u = [...p];
+      u[i][f] = v;
+      return u;
     });
   }, []);
 
-  const handleRemoveCert = useCallback((index) => {
-    setCertifications((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveCert = useCallback((i) => {
+    setCertifications((p) => p.filter((_, x) => x !== i));
   }, []);
 
-  // Custom Sections
-  const handleAddCustom = useCallback(() => {
-    setCustomSections((prev) => [
-      ...prev,
-      { heading: "", fields: [{ label: "", value: "" }] },
-    ]);
+  const handleAddCustomSection = useCallback(() => {
+    setCustomSections((p) => [...p, { heading: "", fields: [{ label: "", value: "" }] }]);
   }, []);
 
-  const handleChangeCustom = useCallback((index, updatedSection) => {
-    setCustomSections((prev) => {
-      const updated = [...prev];
-      updated[index] = updatedSection;
-      return updated;
+  const handleChangeCustomSection = useCallback((sIndex, fieldType, value, fIndex = null) => {
+    setCustomSections((p) => {
+      const u = [...p];
+      if (fieldType === "heading") u[sIndex].heading = value;
+      else if (fieldType === "label") u[sIndex].fields[fIndex].label = value;
+      else if (fieldType === "value") u[sIndex].fields[fIndex].value = value;
+      return u;
     });
   }, []);
 
-  const handleRemoveCustom = useCallback((index) => {
-    setCustomSections((prev) => prev.filter((_, i) => i !== index));
+  const handleAddCustomField = useCallback((sIndex) => {
+    setCustomSections((p) => {
+      const u = [...p];
+      u[sIndex].fields.push({ label: "", value: "" });
+      return u;
+    });
   }, []);
 
-  // ===== Save Handler =====
-  const handleSave = async () => {
+  const handleRemoveCustomSection = useCallback((sIndex) => {
+    setCustomSections((p) => p.filter((_, i) => i !== sIndex));
+  }, []);
+
+  const handleRemoveCustomField = useCallback((sIndex, fIndex) => {
+    setCustomSections((p) => {
+      const u = [...p];
+      u[sIndex].fields = u[sIndex].fields.filter((_, i) => i !== fIndex);
+      return u;
+    });
+  }, []);
+
+  // ===== Save =====
+  const handleSave = useCallback(async () => {
     const payload = {
       personalInfo,
       education,
@@ -206,7 +201,6 @@ const Editor = () => {
       certifications,
       customSections,
     };
-
     try {
       const res = await api.post("/data/save", payload);
       alert(res.data.message || "Data saved successfully!");
@@ -215,82 +209,42 @@ const Editor = () => {
       console.error(err);
       alert("Error saving data");
     }
-  };
+  }, [personalInfo, education, experience, projects, skills, certifications, customSections, navigate, templateId]);
 
-  // ===== UI =====
   if (!selectedTemplate)
-    return (
-      <div className="p-8 text-red-600 text-center">
-        Invalid template selected. Please go back to dashboard.
-      </div>
-    );
+    return <div className="p-8 text-red-600 text-center">Invalid template selected.</div>;
 
   if (loading) return <p className="text-center mt-10">Loading data...</p>;
 
+  // ===== UI =====
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-5xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6">
+    <div className="min-h-screen bg-gray-100 flex flex-col gap-6 p-6">
+      <div className="flex-1 bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[90vh]">
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Resume Editor — {selectedTemplate.name}
         </h1>
 
-        {/* ===== Personal Info ===== */}
-        <PersonalInfoForm
-          personalInfo={personalInfo}
-          onChange={(field, value) =>
-            setPersonalInfo((prev) => ({ ...prev, [field]: value }))
-          }
-        />
+        <PersonalInfoForm personalInfo={personalInfo} onChange={handleChangePersonal} />
 
-        {/* ===== Education ===== */}
-        <EducationForm
-          education={education}
-          onAdd={handleAddEducation}
-          onChange={handleChangeEducation}
-          onRemove={handleRemoveEducation}
-        />
+        <EducationForm education={education} onAdd={handleAddEducation} onChange={handleChangeEducation} onRemove={handleRemoveEducation} />
 
-        {/* ===== Experience ===== */}
-        <ExperienceForm
-          experience={experience}
-          onAdd={handleAddExperience}
-          onChange={handleChangeExperience}
-          onRemove={handleRemoveExperience}
-        />
+        <ExperienceForm experience={experience} onAdd={handleAddExperience} onChange={handleChangeExperience} onRemove={handleRemoveExperience} />
 
-        {/* ===== Projects ===== */}
-        <ProjectsForm
-          projects={projects}
-          onAdd={handleAddProject}
-          onChange={handleChangeProject}
-          onRemove={handleRemoveProject}
-        />
+        <ProjectsForm projects={projects} onAdd={handleAddProject} onChange={handleChangeProject} onRemove={handleRemoveProject} />
 
-        {/* ===== Skills ===== */}
-        <SkillsForm
-          skills={skills}
-          onAdd={handleAddSkill}
-          onChange={handleChangeSkill}
-          onRemove={handleRemoveSkill}
-        />
+        <SkillsForm skills={skills} onAdd={handleAddSkill} onChange={handleChangeSkill} onRemove={handleRemoveSkill} />
 
-        {/* ===== Certifications ===== */}
-        <CertificationsForm
-          certifications={certifications}
-          onAdd={handleAddCert}
-          onChange={handleChangeCert}
-          onRemove={handleRemoveCert}
-        />
+        <CertificationsForm certifications={certifications} onAdd={handleAddCert} onChange={handleChangeCert} onRemove={handleRemoveCert} />
 
-        {/* ===== Custom Sections ===== */}
         <CustomSectionForm
           customSections={customSections}
-          onAdd={handleAddCustom}
-          onChange={handleChangeCustom}
-          onRemove={handleRemoveCustom}
+          onAddSection={handleAddCustomSection}
+          onChangeField={handleChangeCustomSection}
+          onAddField={handleAddCustomField}
+          onRemoveSection={handleRemoveCustomSection}
+          onRemoveField={handleRemoveCustomField}
         />
 
-        {/* ===== Save Button ===== */}
         <div className="flex justify-end mt-6">
           <button
             onClick={handleSave}
@@ -304,4 +258,4 @@ const Editor = () => {
   );
 };
 
-export default Editor;
+export default React.memo(Editor);

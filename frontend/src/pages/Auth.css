@@ -1,0 +1,64 @@
+@keyframes borderMove {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-borderMove {
+  background-size: 300% 300%;
+  animation: borderMove 6s linear infinite;
+  filter: blur(6px);
+}
+
+/* 🔠 Resume Builder Title Animation */
+.resume-title {
+  user-select: none;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+
+.title-letter {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* When hovering the entire title, each letter falls down */
+.resume-title:hover .title-letter {
+  animation: fallDown 0.6s ease forwards;
+}
+
+/* Create a cascading delay effect */
+.resume-title:hover .title-letter:nth-child(1) { animation-delay: 0s; }
+.resume-title:hover .title-letter:nth-child(2) { animation-delay: 0.05s; }
+.resume-title:hover .title-letter:nth-child(3) { animation-delay: 0.1s; }
+.resume-title:hover .title-letter:nth-child(4) { animation-delay: 0.15s; }
+.resume-title:hover .title-letter:nth-child(5) { animation-delay: 0.2s; }
+.resume-title:hover .title-letter:nth-child(6) { animation-delay: 0.25s; }
+.resume-title:hover .title-letter:nth-child(7) { animation-delay: 0.3s; }
+.resume-title:hover .title-letter:nth-child(8) { animation-delay: 0.35s; }
+.resume-title:hover .title-letter:nth-child(9) { animation-delay: 0.4s; }
+.resume-title:hover .title-letter:nth-child(10) { animation-delay: 0.45s; }
+.resume-title:hover .title-letter:nth-child(11) { animation-delay: 0.5s; }
+.resume-title:hover .title-letter:nth-child(12) { animation-delay: 0.55s; }
+.resume-title:hover .title-letter:nth-child(13) { animation-delay: 0.6s; }
+.resume-title:hover .title-letter:nth-child(14) { animation-delay: 0.65s; }
+
+@keyframes fallDown {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(20px) rotate(10deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(60px) rotate(25deg);
+    opacity: 0;
+  }
+}

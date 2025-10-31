@@ -18,9 +18,13 @@ const TemplateCard = ({ template, onSelect }) => {
       <h2 className="text-lg font-semibold mb-2">{name || "Unnamed Template"}</h2>
 
       {/* ✅ Safe Preview (with demoMode fallback) */}
-      <div className="w-full h-64 overflow-hidden border rounded-md mb-4 bg-gray-50 flex items-center justify-center">
-        <TemplateComponent demoMode data={{}} />
-      </div>
+<div className="w-full bg-gray-100 border rounded-md mb-4 overflow-hidden">
+<div className="w-full max-h-[800px] overflow-y-auto bg-white shadow-md border border-gray-300 rounded-md mb-4">
+  <TemplateComponent demoMode data={{}} />
+</div>
+
+</div>
+
 
       <button
         onClick={() => onSelect(template)}
@@ -32,4 +36,4 @@ const TemplateCard = ({ template, onSelect }) => {
   );
 };
 
-export default TemplateCard;
+export default React.memo(TemplateCard);

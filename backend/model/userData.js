@@ -1,4 +1,3 @@
-// models/UserData.js
 const mongoose = require("mongoose");
 
 const userDataSchema = new mongoose.Schema({
@@ -6,7 +5,7 @@ const userDataSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-    unique: true, // each user has only one data document
+    unique: true,
   },
 
   // ====== Personal Information ======
@@ -15,26 +14,31 @@ const userDataSchema = new mongoose.Schema({
     email: { type: String },
     phone: { type: String },
     address: { type: String },
-    careerObjective: { type: String },
+    careerObjective: { type: String }, // ✅ fixed (no space)
+    linkedin: { type: String },
+    github: { type: String },
+    portfolio: { type: String },
   },
 
   // ====== Education ======
   education: [
     {
-      level: { type: String }, // e.g., "10th", "12th", "B.Tech", "M.Tech", "Ph.D"
-      institution: { type: String },
+      degree: { type: String }, // ✅ renamed from 'level'
+      institute: { type: String }, // ✅ renamed from 'institution'
       boardOrUniversity: { type: String },
       specialization: { type: String },
       startYear: { type: String },
       endYear: { type: String },
-      grade: { type: String }, // CGPA, %, etc.
+      grade: { type: String },
+      location: { type: String },
+      cgpa: { type: String },
     },
   ],
 
   // ====== Work Experience ======
   experience: [
     {
-      title: { type: String }, // e.g., Software Engineer Intern
+      title: { type: String },
       company: { type: String },
       location: { type: String },
       startDate: { type: String },
@@ -49,10 +53,10 @@ const userDataSchema = new mongoose.Schema({
       title: { type: String },
       timeline: { type: String },
       description: { type: String },
-      technologies: [{ type: String }],
+      techStack: { type: String }, // ✅ renamed from 'technologies'
       githubFrontend: { type: String },
       githubBackend: { type: String },
-      liveLink: { type: String },
+      link: { type: String }, // ✅ renamed from 'liveLink'
     },
   ],
 

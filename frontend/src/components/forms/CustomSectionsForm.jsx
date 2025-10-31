@@ -1,6 +1,14 @@
+// src/components/forms/CustomSectionsForm.jsx
 import React from "react";
 
-const CustomSectionForm = ({ customSections = [], onAddSection, onChangeField, onAddField, onRemoveSection, onRemoveField }) => {
+const CustomSectionsForm = ({
+  customSections = [],
+  onAddSection,
+  onChangeField,
+  onAddField,
+  onRemoveSection,
+  onRemoveField,
+}) => {
   return (
     <section className="mb-6">
       <div className="flex justify-between items-center mb-2">
@@ -82,4 +90,4 @@ const CustomSectionForm = ({ customSections = [], onAddSection, onChangeField, o
   );
 };
 
-export default React.memo(CustomSectionForm);
+export default React.memo(CustomSectionsForm);
